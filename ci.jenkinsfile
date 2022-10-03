@@ -1,6 +1,7 @@
 #!groovy
 
 String buildShell = "${env.buildShell}"
+String buildType = "${env.buildType}"
 pipeline{
   //agent {node {label "master"}}
   agent any
@@ -14,7 +15,7 @@ pipeline{
       }
     }
     
-    stage("GradleBuild"){
+   /* stage("GradleBuild"){
       steps{
         script{
           gradleHome = tool "gradle5.3"
@@ -31,7 +32,7 @@ pipeline{
         }
       }
       
-    }
+    }*/
   }
   
 }
