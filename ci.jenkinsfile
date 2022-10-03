@@ -5,11 +5,20 @@ pipeline{
   //agent {node {label "master"}}
   agent any
   stages{
-    stage("build"){
+    stage("MavenBuild"){
       steps{
         script{
           mvnHome = tool "mvn3.6"
           sh "${mvnHome}/bin/mvn ${buildShell}"
+        }
+      }
+    }
+    
+    stage("GradleBuild"){
+      steps{
+        script{
+          gradleHome = tool "gradle5.3"
+          sh "${gradleHome}/bin/gradle ${buildShell}"
         }
       }
     }
