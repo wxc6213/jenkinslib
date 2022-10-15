@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+    options{
+	timestamps()//日志会有时间
+	skipDefaultCheckout()//删除隐式checkout scm语句
+	disableConcurrentBuilds()//禁止并行
+    }
+    stages {
+        stage('GetCode') {
+            when { environment name: 'username', value: 'wxc' }
+            steps {
+                timeout(time:5, unit:"MINUTES"){
+                    script{
+                        println('获取代码')
+                        input id: 'Test', message: '是否要继续？', ok: '是，继续吧', parameters: [choice(choices: ['a', 'b'], name: 'test1')], submitter: 'wxc,admin'
+
+                    }
+                }
+                
+            }
+        }
+        
+        stage('并行构建 '){
+            failFast true //其中一个失败强制停止所有 
+            parallel{
+                //并行构建 
+                stage('Build') {
+                    steps {
+                        timeout(time:5, unit:"MINUTES"){
+                                script{
+                                println('应用打包 ')
+                                mvnHome = tool "maven"
+                                sh "${mvnHome}/bin/mvn --version"
+                    }
+                }
+                
+            }
+        }
+                stage('CodeScan') {
+                    steps {
+                        timeout(time:5, unit:"MINUTES"){
+                            script{
+                                println('代码扫描  ')
+                                println("$username")
+                    }
+                }
+                
+            }
+        }
+                
+            }
+        }
+        
+        
+    }
+    
+    
+    //构建后操作 
+    post{
+        always{
+            script{
+                println("always")
+            }
+        }
+        success{
+            script{
+                currentBuild.description = "构建成功"
+            }
+        }
+        failure{
+            script{
+                currentBuild.description = "构建失败"
+            }
+        }
+        aborted{
+            script{
+                currentBuild.description = "构建取消"
+            }
+        }
+    }
+    
+    
+}
